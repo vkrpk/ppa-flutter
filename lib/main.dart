@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -48,6 +50,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  String getLabel(integer) {
+    if(isPrime(integer)) {
+      return 'premier';
+    } else if (integer % 2 == 0) {
+      return 'pair';
+    } else {
+      return 'impair';
+    }
+  }
+
   bool isPrime(int num) {
     if (num <= 1) {
       return false;
@@ -67,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('$_counter : Nombre ${getLabel(_counter)}'),
       ),
       body: Center(
         child: Column(
@@ -88,13 +100,56 @@ class _MyHomePageState extends State<MyHomePage> {
               // ),
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  title: Text(_fruits[index].toString(), style: const TextStyle(
+                  title: Text(index.toString(), style: const TextStyle(
                     color: Colors.white,
                   )),
                   tileColor: getColor(index),
                   leading: CircleAvatar(
-                    backgroundImage: AssetImage(isPrime(index + 1) ? 'images/ananas.png' : getColor(index + 1) == Colors.indigo ? 'images/poire.png' : 'images/pomme.png'),
+                    backgroundImage: AssetImage(isPrime(index) ? 'images/ananas.png' : getColor(index) == Colors.indigo ? 'images/poire.png' : 'images/pomme.png'),
                   ),
+                  onTap: () {
+                    AlertDialog alert = AlertDialog(
+                      title: Text('$index : Nombre ${getLabel(index)}', style: const TextStyle(
+                        color: Colors.white,
+                      )),
+                      backgroundColor: getColor(index),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Image.asset(
+                            isPrime(index) ? 'images/ananas.png' : getColor(index) == Colors.indigo ? 'images/poire.png' : 'images/pomme.png', // Replace with your image path
+                            width: 150,
+                          ),
+                          SizedBox(height: 16),
+                        ],
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                          child: const Text('Cancel', style: TextStyle(
+                            color: Colors.white,
+                          )),
+                        ),
+                        TextButton(
+                          onPressed: () => {
+                            setState(() {
+                              _fruits.removeAt(index);
+                            }),
+                            Navigator.pop(context, 'Cancel')
+                          },
+                          child: const Text('Supprimer de la liste', style: TextStyle(
+                            color: Colors.white,
+                          )),
+                        ),
+                      ],
+                    );
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert;
+                      },
+                    );
+                  }
                 );
               },
             )
